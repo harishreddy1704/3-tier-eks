@@ -1,0 +1,61 @@
+global:
+  namespace: three-tier
+  environment: dev
+
+frontend:
+  name: frontend
+  image:
+    repository: nginx
+    tag: "1.25-alpine"
+    pullPolicy: IfNotPresent
+  replicaCount: 2
+  port: 80
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: true
+    className: alb
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    host: ""
+
+backend:
+  name: backend
+  image:
+    repository: "917714910664.dkr.ecr.us-east-1.amazonaws.com/flask-api"
+    tag: "latest"
+    pullPolicy: Always
+  replicaCount: 2
+  port: 5000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  service:
+    type: ClusterIP
+    port: 5000
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  env:
+    DB_PORT: "5432"
+    DB_NAME: "appdb"
+
+database:
+  secretName: db-credentials

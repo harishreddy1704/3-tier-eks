@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Directory</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 600; }
+    header span {
+      font-size: 0.75rem;
+      background: #16213e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      color: #a0aec0;
+    }
+
+    /* ── Layout ── */
+    main {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+    }
+    .card h2 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 1rem; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #4a5568;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      color: #222;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.15s;
+    }
+    button[type="submit"]:hover { background: #16213e; }
+
+    /* ── Stats bar ── */
+    .stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .stat {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      flex: 1;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead th {
+      text-align: left;
+      padding: 10px 12px;
+      background: #f7fafc;
+      color: #4a5568;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    tbody tr {
+      border-bottom: 1px solid #f0f4f8;
+      transition: background 0.1s;
+    }
+    tbody tr:hover { background: #f7fafc; }
+    tbody td { padding: 12px 12px; color: #2d3748; }
+
+    /* ── Avatar ── */
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #ebf4ff;
+      color: #3182ce;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      background: #ebf8ff;
+      color: #2b6cb0;
+    }
+
+    /* ── Delete btn ── */
+    .del-btn {
+      padding: 4px 10px;
+      background: transparent;
+      border: 1px solid #fc8181;
+      color: #e53e3e;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .del-btn:hover { background: #fff5f5; }
+
+    /* ── Empty + error states ── */
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #a0aec0;
+      font-size: 0.875rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+    .toast.success { background: #38a169; }
+    .toast.error   { background: #e53e3e; }
+
+    @media (max-width: 700px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Employee Directory</h1>
+  <span>Running on AWS EKS</span>
+</header>
+
+<main>
+  <!-- Add Employee Form -->
+  <div class="card">
+    <h2>Add Employee</h2>
+    <form id="emp-form">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Rajesh Kumar" required/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="rajesh@company.com" required/>
+      </div>
+      <div class="form-group">
+        <label>Department</label>
+        <select id="department">
+          <option value="Engineering">Engineering</option>
+          <option value="DevOps">DevOps</option>
+          <option value="Product">Product</option>
+          <option value="Design">Design</option>
+          <option value="HR">HR</option>
+          <option value="Finance">Finance</option>
+          <option value="Marketing">Marketing</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <input type="text" id="role" placeholder="Senior Engineer" required/>
+      </div>
+      <button type="submit">Add Employee</button>
+    </form>
+  </div>
+
+  <!-- Employee List -->
+  <div>
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num" id="total-count">0</div>
+        <div class="stat-label">Total Employees</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="dept-count">0</div>
+        <div class="stat-label">Departments</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <h2>All Employees</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Email</th>
+              <th>Joined</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="emp-table-body">
+            <tr><td colspan="6" class="empty">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = '/api/employees';
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function initials(name) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  function formatDate(iso) {
+    return new Date(iso).toLocaleDateString('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Load employees ────────────────────────────────────────────────────────
+  async function loadEmployees() {
+    try {
+      const res  = await fetch(API);
+      const data = await res.json();
+      renderTable(data);
+    } catch (e) {
+      document.getElementById('emp-table-body').innerHTML =
+        `<tr><td colspan="6" class="empty">Could not connect to API</td></tr>`;
+    }
+  }
+
+  function renderTable(employees) {
+    const tbody = document.getElementById('emp-table-body');
+    document.getElementById('total-count').textContent = employees.length;
+    const depts = new Set(employees.map(e => e.department));
+    document.getElementById('dept-count').textContent = depts.size;
+
+    if (employees.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty">No employees yet — add one!</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = employees.map(e => `
+      <tr>
+        <td>
+          <span class="avatar">${initials(e.name)}</span>
+          ${e.name}
+        </td>
+        <td><span class="badge">${e.department}</span></td>
+        <td>${e.role}</td>
+        <td style="color:#4a5568">${e.email}</td>
+        <td style="color:#718096">${formatDate(e.created_at)}</td>
+        <td>
+          <button class="del-btn" onclick="deleteEmployee(${e.id}, '${e.name}')">
+            Remove
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // ── Add employee ──────────────────────────────────────────────────────────
+  document.getElementById('emp-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      name:       document.getElementById('name').value.trim(),
+      email:      document.getElementById('email').value.trim(),
+      department: document.getElementById('department').value,
+      role:       document.getElementById('role').value.trim(),
+    };
+
+    try {
+      const res = await fetch(API, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        showToast(`${payload.name} added successfully`);
+        e.target.reset();
+        loadEmployees();
+      } else {
+        showToast(data.error || 'Something went wrong', 'error');
+      }
+    } catch {
+      showToast('Could not reach API', 'error');
+    }
+  });
+
+  // ── Delete employee ───────────────────────────────────────────────────────
+  async function deleteEmployee(id, name) {
+    if (!confirm(`Remove ${name} from the directory?`)) return;
+    try {
+      const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast(`${name} removed`);
+        loadEmployees();
+      } else {
+        showToast('Could not delete employee', 'error');
+      }
+    } catch {
+      showToast('Could not reach API', 'error');
+    }
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadEmployees();
+</script>
+</body>
+</html>
