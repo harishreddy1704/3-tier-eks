@@ -1,4 +1,4 @@
-name: 3-Tier EKS CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
@@ -9,11 +9,11 @@ on:
       - main
 
 env:
-  AWS_REGION:     us-east-1
-  ECR_REGISTRY:   917714910664.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPOSITORY: flask-api
-  EKS_CLUSTER:    eksdemo
-  NAMESPACE:      three-tier
+  AWS_REGION: "us-east-1"
+  ECR_REGISTRY: "917714910664.dkr.ecr.us-east-1.amazonaws.com"
+  ECR_REPOSITORY: "flask-api"
+  EKS_CLUSTER: "eksdemo"
+  NAMESPACE: "three-tier"
 
 jobs:
   unit-test:
@@ -27,20 +27,19 @@ jobs:
         with:
           python-version: "3.12"
 
-     - name: Install dependencies
-       run: pip install -r app/backend/requirements.txt
+      - name: Install dependencies
+        run: pip install -r app/backend/requirements.txt
 
-     - name: Run tests
-       working-directory: app/backend        # ← run pytest from here
-       env:
-         PYTHONPATH: .                        # ← makes "from app import app" work
-         DB_HOST: localhost
-         DB_PORT: "5432"
-         DB_NAME: testdb
-         DB_USER: test
-         DB_PASSWORD: test
-       run: pytest tests/ --cov=. -v
-
+      - name: Run tests
+        working-directory: app/backend
+        env:
+          PYTHONPATH: "."
+          DB_HOST: "localhost"
+          DB_PORT: "5432"
+          DB_NAME: "testdb"
+          DB_USER: "test"
+          DB_PASSWORD: "test"
+        run: pytest tests/ --cov=. -v
   build:
     name: Build and push Docker image
     runs-on: ubuntu-latest
