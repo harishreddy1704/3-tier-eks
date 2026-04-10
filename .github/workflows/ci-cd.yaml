@@ -16,7 +16,7 @@ env:
   NAMESPACE:      three-tier
 
 jobs:
-  test:
+  unit-test:
     name: Run unit tests
     runs-on: ubuntu-latest
     steps:
