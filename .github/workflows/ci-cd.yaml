@@ -27,13 +27,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: |
-          pip install -r app/backend/requirements.txt
-          pip install pytest pytest-cov
+     - name: Install dependencies
+       run: pip install -r app/backend/requirements.txt
 
-      - name: Run tests
-        run: pytest app/backend/tests/ --cov=app/backend
+     - name: Run tests
+       working-directory: app/backend        # ← run pytest from here
+       env:
+         PYTHONPATH: .                        # ← makes "from app import app" work
+         DB_HOST: localhost
+         DB_PORT: "5432"
+         DB_NAME: testdb
+         DB_USER: test
+         DB_PASSWORD: test
+       run: pytest tests/ --cov=. -v
 
   build:
     name: Build and push Docker image
